@@ -1,0 +1,16 @@
+stages:
+  - name: create-pr
+    image: ghcr.io/github/gh-cli:latest
+    script: |
+      BRANCH="$QA_BRANCH"
+      TITLE="[stg] 웹결제 노출 변경 – $BRANCH"
+      BODY="자동 PR (QA 완료: $QA_DATE)"
+
+      # 이미 PR 있으면 패스
+      if gh pr view "$BRANCH" >/dev/null 2>&1; then
+        echo "이미 PR 있음"; exit 0
+      fi
+
+      gh pr create -B main -H "$BRANCH" -t "$TITLE" -b "$BODY"
+    secrets:
+      - GITHUB_TOKEN      # MCP 시크릿 스토어에 등록할 이름
